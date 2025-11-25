@@ -205,6 +205,12 @@ export default function MarkdownPostWriter() {
             Properties ({yamlIsHidden ? 'Hidden' : 'Shown'})
           </div>
         </div>
+        {yamlFields.length === 0 && !yamlIsHidden && (
+          <div className="mb-8 w-full rounded border border-gray-300 bg-gray-50 p-4 text-center dark:bg-gray-800 dark:border-gray-600">
+            No YAML fields added. Click &quot;Add YAML Field&quot; to get
+            started.
+          </div>
+        )}
         <div className={`mb-8 w-full ${yamlIsHidden ? 'hidden' : 'block'}`}>
           <div className="mb-8 w-full">
             <DndContext
