@@ -3,7 +3,7 @@
 // MARK: Imports
 
 import MDEditor from '@uiw/react-md-editor';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -43,6 +43,8 @@ export default function MarkdownPostWriter() {
 
   // MARK: Effects
 
+  const initialRender = useRef(true);
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
@@ -62,6 +64,11 @@ export default function MarkdownPostWriter() {
   }, []);
 
   useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
+
     localStorage.setItem('yamlFields', JSON.stringify(yamlFields));
     localStorage.setItem('markdownContent', markdownContent);
     localStorage.setItem('yamlIsHidden', JSON.stringify(yamlIsHidden));
