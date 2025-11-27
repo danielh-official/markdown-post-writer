@@ -282,10 +282,16 @@ interface SortableYamlFieldProps {
 }
 
 function SortableYamlField(props: SortableYamlFieldProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: props.id,
-    });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: props.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -310,8 +316,22 @@ function SortableYamlField(props: SortableYamlFieldProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`${isDragging ? 'ring-2 ring-blue-500 rounded-md bg-blue-50 dark:bg-blue-900/20' : ''}`}
+    >
       <div>
+        {/* Mobile drag handle - shown centered above the row on small screens */}
+        <div className="sm:hidden flex justify-center mb-2">
+          <div
+            className={`cursor-move p-2 px-8 bg-gray-300 rounded dark:bg-gray-600 touch-none ${isDragging ? 'bg-blue-400 dark:bg-blue-600' : ''}`}
+            {...listeners}
+            {...attributes}
+          >
+            &#x2630;
+          </div>
+        </div>
         <div key={index} className="mb-4 w-full flex flex-wrap sm:flex-nowrap gap-2 sm:gap-x-4 items-center">
           <input
             type="text"
@@ -384,8 +404,9 @@ function SortableYamlField(props: SortableYamlFieldProps) {
           >
             Remove
           </button>
+          {/* Desktop drag handle - shown at the end of the row on larger screens */}
           <div
-            className="cursor-move p-2 bg-gray-300 rounded dark:bg-gray-600"
+            className="hidden sm:block cursor-move p-2 bg-gray-300 rounded dark:bg-gray-600"
             {...listeners}
             {...attributes}
           >
