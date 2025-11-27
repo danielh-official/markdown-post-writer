@@ -127,8 +127,8 @@ export default function MarkdownPostWriter() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-5xl flex-col items-center py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex w-full justify-between">
+      <main className="flex min-h-screen w-full max-w-5xl flex-col items-center py-8 px-4 sm:py-32 sm:px-16 bg-white dark:bg-black sm:items-start">
+        <div className="flex w-full flex-col sm:flex-row sm:justify-between gap-4">
           <div className="mb-4 block text-2xl font-bold dark:text-white">
             Markdown Post Writer
           </div>
@@ -312,10 +312,10 @@ function SortableYamlField(props: SortableYamlFieldProps) {
   return (
     <div ref={setNodeRef} style={style}>
       <div>
-        <div key={index} className="mb-4 w-full flex gap-x-4 items-center">
+        <div key={index} className="mb-4 w-full flex flex-wrap sm:flex-nowrap gap-2 sm:gap-x-4 items-center">
           <input
             type="text"
-            className="w-full p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full sm:w-auto sm:flex-1 p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             value={field.label || ''}
             onChange={(e) => {
               const newFields = [...yamlFields];
@@ -329,7 +329,7 @@ function SortableYamlField(props: SortableYamlFieldProps) {
             field.type === 'number') && (
             <input
               type={determineInputType(field.type)}
-              className="w-full p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full sm:w-auto sm:flex-1 p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               value={(field.value as string | number | null) || ''}
               onChange={(e) => {
                 if (field.type === 'boolean') {
@@ -347,7 +347,7 @@ function SortableYamlField(props: SortableYamlFieldProps) {
           )}
           {field.type === 'boolean' && (
             <select
-              className="w-full p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full sm:w-auto sm:flex-1 p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               value={field.value ? 'true' : 'false'}
               onChange={(e) => {
                 const newFields = [...yamlFields];
@@ -360,7 +360,7 @@ function SortableYamlField(props: SortableYamlFieldProps) {
             </select>
           )}
           <select
-            className="p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="flex-1 sm:flex-none p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             value={field.type}
             onChange={(e) => {
               const newFields = [...yamlFields];
@@ -376,7 +376,7 @@ function SortableYamlField(props: SortableYamlFieldProps) {
             <option value="list">List</option>
           </select>
           <button
-            className="ml-2 rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600 cursor-pointer"
+            className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600 cursor-pointer"
             onClick={() => {
               const newFields = yamlFields.filter((_, i) => i !== index);
               setYamlFields(newFields);
@@ -385,7 +385,7 @@ function SortableYamlField(props: SortableYamlFieldProps) {
             Remove
           </button>
           <div
-            className="cursor-move ml-2 p-2 bg-gray-300 rounded dark:bg-gray-600"
+            className="cursor-move p-2 bg-gray-300 rounded dark:bg-gray-600"
             {...listeners}
             {...attributes}
           >
