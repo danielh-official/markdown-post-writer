@@ -322,7 +322,10 @@ function SortableYamlField(props: SortableYamlFieldProps) {
       className={`${isDragging ? 'ring-2 ring-blue-500 rounded-md bg-blue-50 dark:bg-blue-900/20' : ''}`}
     >
       <div>
-        <div key={index} className="mb-2 sm:mb-4 w-full flex flex-wrap sm:flex-nowrap gap-2 sm:gap-x-4 items-center">
+        <div
+          key={index}
+          className="mb-2 sm:mb-4 w-full flex flex-wrap sm:flex-nowrap gap-2 sm:gap-x-4 items-center"
+        >
           <input
             type="text"
             className="w-full sm:w-auto sm:flex-1 p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
