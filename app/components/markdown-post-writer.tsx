@@ -322,17 +322,7 @@ function SortableYamlField(props: SortableYamlFieldProps) {
       className={`${isDragging ? 'ring-2 ring-blue-500 rounded-md bg-blue-50 dark:bg-blue-900/20' : ''}`}
     >
       <div>
-        {/* Mobile drag handle - shown centered above the row on small screens */}
-        <div className="sm:hidden flex justify-center mb-2">
-          <div
-            className={`cursor-move p-2 px-8 bg-gray-300 rounded dark:bg-gray-600 touch-none ${isDragging ? 'bg-blue-400 dark:bg-blue-600' : ''}`}
-            {...listeners}
-            {...attributes}
-          >
-            &#x2630;
-          </div>
-        </div>
-        <div key={index} className="mb-4 w-full flex flex-wrap sm:flex-nowrap gap-2 sm:gap-x-4 items-center">
+        <div key={index} className="mb-2 sm:mb-4 w-full flex flex-wrap sm:flex-nowrap gap-2 sm:gap-x-4 items-center">
           <input
             type="text"
             className="w-full sm:w-auto sm:flex-1 p-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -407,6 +397,16 @@ function SortableYamlField(props: SortableYamlFieldProps) {
           {/* Desktop drag handle - shown at the end of the row on larger screens */}
           <div
             className="hidden sm:block cursor-move p-2 bg-gray-300 rounded dark:bg-gray-600"
+            {...listeners}
+            {...attributes}
+          >
+            &#x2630;
+          </div>
+        </div>
+        {/* Mobile drag handle - shown centered below the row on small screens */}
+        <div className="sm:hidden flex justify-center mb-4">
+          <div
+            className={`cursor-move p-2 px-8 bg-gray-300 rounded dark:bg-gray-600 touch-none ${isDragging ? 'bg-blue-400 dark:bg-blue-600' : ''}`}
             {...listeners}
             {...attributes}
           >
