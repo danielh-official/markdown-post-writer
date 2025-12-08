@@ -209,7 +209,7 @@ export default function MarkdownPostWriter() {
             )}
           </button>
           <div className="text-lg font-semibold dark:text-white">
-            Properties ({yamlIsHidden ? 'Hidden' : 'Shown'})
+            Properties ({yamlFields.length})
           </div>
         </div>
         {yamlFields.length === 0 && !yamlIsHidden && (
