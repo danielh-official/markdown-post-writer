@@ -125,6 +125,17 @@ export default function MarkdownPostWriter() {
 
   // MARK: Main Component Render
 
+  if (!isClient) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <div className="text-gray-600 dark:text-gray-300">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-5xl flex-col items-center py-8 px-4 sm:py-32 sm:px-16 bg-white dark:bg-black sm:items-start">
@@ -133,38 +144,36 @@ export default function MarkdownPostWriter() {
             Markdown Post Writer
           </div>
           <div className="flex">
-            {isClient && (
-              <button
-                className="mr-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
-                onClick={() => {
-                  const yamlLines = yamlFields
-                    .sort((a, b) => a.order - b.order)
-                    .map((field) => {
-                      let valueString;
-                      if (field.type === 'list' && Array.isArray(field.value)) {
-                        valueString =
-                          '\n' +
-                          field.value
-                            .map(
-                              (item: string | number | boolean | null) =>
-                                `  - ${item}`
-                            )
-                            .join('\n');
-                      } else if (field.type === 'boolean') {
-                        valueString = field.value ? 'true' : 'false';
-                      } else {
-                        valueString = field.value;
-                      }
-                      return `${field.label}: ${valueString}`;
-                    })
-                    .join('\n');
-                  const fullContent = `---\n${yamlLines}\n---\n\n${markdownContent}`;
-                  navigator.clipboard.writeText(fullContent);
-                }}
-              >
-                Copy Markdown
-              </button>
-            )}
+            <button
+              className="mr-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
+              onClick={() => {
+                const yamlLines = yamlFields
+                  .sort((a, b) => a.order - b.order)
+                  .map((field) => {
+                    let valueString;
+                    if (field.type === 'list' && Array.isArray(field.value)) {
+                      valueString =
+                        '\n' +
+                        field.value
+                          .map(
+                            (item: string | number | boolean | null) =>
+                              `  - ${item}`
+                          )
+                          .join('\n');
+                    } else if (field.type === 'boolean') {
+                      valueString = field.value ? 'true' : 'false';
+                    } else {
+                      valueString = field.value;
+                    }
+                    return `${field.label}: ${valueString}`;
+                  })
+                  .join('\n');
+                const fullContent = `---\n${yamlLines}\n---\n\n${markdownContent}`;
+                navigator.clipboard.writeText(fullContent);
+              }}
+            >
+              Copy Markdown
+            </button>
           </div>
         </div>
         <div className="mb-8 text-gray-600 dark:text-gray-300">
@@ -247,23 +256,19 @@ export default function MarkdownPostWriter() {
             </DndContext>
           </div>
           <div className="text-end">
-            {isClient && (
-              <button
-                className="mb-8 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
-                onClick={addYamlField}
-              >
-                Add YAML Field
-              </button>
-            )}
+            <button
+              className="mb-8 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
+              onClick={addYamlField}
+            >
+              Add YAML Field
+            </button>
           </div>
         </div>
         <div className="container">
-          {isClient && (
-            <MDEditor
-              value={markdownContent}
-              onChange={(val) => setMarkdownContent(val || '')}
-            />
-          )}
+          <MDEditor
+            value={markdownContent}
+            onChange={(val) => setMarkdownContent(val || '')}
+          />
         </div>
       </main>
     </div>
