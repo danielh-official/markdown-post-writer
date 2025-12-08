@@ -128,8 +128,15 @@ export default function MarkdownPostWriter() {
   if (!isClient) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-        <div className="flex flex-col items-center gap-4" role="status" aria-live="polite">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" aria-label="Loading"></div>
+        <div
+          className="flex flex-col items-center gap-4"
+          role="status"
+          aria-live="polite"
+        >
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"
+            aria-label="Loading"
+          ></div>
           <div className="text-gray-600 dark:text-gray-300">Loading...</div>
         </div>
       </div>
