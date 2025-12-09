@@ -20,7 +20,8 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { add, CSS } from '@dnd-kit/utilities';
+import { CSS } from '@dnd-kit/utilities';
+import yaml from 'js-yaml';
 
 interface YamlField {
   id: number;
@@ -89,6 +90,65 @@ export default function MarkdownPostWriter() {
     ]);
   }
 
+  function exportConfiguration() {
+    const config = {
+      yamlFields: yamlFields.map((field) => ({
+        label: field.label,
+        type: field.type,
+        value: field.value,
+        order: field.order,
+      })),
+    };
+    const yamlContent = yaml.dump(config);
+    const blob = new Blob([yamlContent], { type: 'text/yaml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'markdown-post-config.yaml';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function importConfiguration(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const config = yaml.load(content) as {
+          yamlFields: Array<{
+            label: string;
+            type: YamlField['type'];
+            value: string | number | boolean | null | string[];
+            order: number;
+          }>;
+        };
+
+        if (config && config.yamlFields && Array.isArray(config.yamlFields)) {
+          const importedFields = config.yamlFields.map((field, index) => ({
+            id: Date.now() + index,
+            label: field.label || '',
+            type: field.type || 'text',
+            value: field.value ?? null,
+            order: field.order ?? index,
+          }));
+          setYamlFields(importedFields);
+        } else {
+          alert('Invalid configuration file format');
+        }
+      } catch (error) {
+        alert('Error parsing configuration file: ' + (error as Error).message);
+      }
+    };
+    reader.readAsText(file);
+    // Reset the input so the same file can be imported again
+    event.target.value = '';
+  }
+
   // MARK: DND Kit Setup
 
   const sensors = useSensors(
@@ -150,9 +210,9 @@ export default function MarkdownPostWriter() {
           <div className="mb-4 block text-2xl font-bold dark:text-white">
             Markdown Post Writer
           </div>
-          <div className="flex">
+          <div className="flex flex-wrap gap-2">
             <button
-              className="mr-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
+              className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
               onClick={() => {
                 const yamlLines = yamlFields
                   .sort((a, b) => a.order - b.order)
@@ -181,6 +241,21 @@ export default function MarkdownPostWriter() {
             >
               Copy Markdown
             </button>
+            <button
+              className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 cursor-pointer"
+              onClick={exportConfiguration}
+            >
+              Export Config
+            </button>
+            <label className="rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600 cursor-pointer">
+              Import Config
+              <input
+                type="file"
+                accept=".yaml,.yml"
+                className="hidden"
+                onChange={importConfiguration}
+              />
+            </label>
           </div>
         </div>
         <div className="mb-8 text-gray-600 dark:text-gray-300">
