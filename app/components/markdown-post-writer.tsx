@@ -20,7 +20,7 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { add, CSS } from '@dnd-kit/utilities';
 
 interface YamlField {
   id: number;
@@ -228,12 +228,6 @@ export default function MarkdownPostWriter() {
             Properties ({yamlFields.length})
           </div>
         </div>
-        {yamlFields.length === 0 && !yamlIsHidden && (
-          <div className="mb-8 w-full rounded border border-gray-300 bg-gray-50 p-4 text-center dark:bg-gray-800 dark:border-gray-600">
-            No YAML fields added. Click &quot;Add YAML Field&quot; to get
-            started.
-          </div>
-        )}
         <div className={`mb-8 w-full ${yamlIsHidden ? 'hidden' : 'block'}`}>
           <div className="mb-8 w-full">
             <DndContext
@@ -262,7 +256,8 @@ export default function MarkdownPostWriter() {
               </SortableContext>
             </DndContext>
           </div>
-          <div className="text-end">
+
+          <div className="text-center w-full">
             <button
               className="mb-8 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
               onClick={addYamlField}
