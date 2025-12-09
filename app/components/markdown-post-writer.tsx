@@ -119,7 +119,9 @@ export default function MarkdownPostWriter() {
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const config = yaml.load(content) as {
+        const config = yaml.load(content, {
+          schema: yaml.CORE_SCHEMA,
+        }) as {
           yamlFields: Array<{
             label: string;
             type: YamlField['type'];
@@ -129,8 +131,9 @@ export default function MarkdownPostWriter() {
         };
 
         if (config && config.yamlFields && Array.isArray(config.yamlFields)) {
+          const baseTimestamp = Date.now();
           const importedFields = config.yamlFields.map((field, index) => ({
-            id: Date.now() + index,
+            id: baseTimestamp * 1000 + index,
             label: field.label || '',
             type: field.type || 'text',
             value: field.value ?? null,
