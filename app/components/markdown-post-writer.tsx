@@ -90,28 +90,27 @@ export default function MarkdownPostWriter() {
     ]);
   }
 
-  function exportConfiguration() {
-    const config = {
-      yamlFields: yamlFields.map((field) => ({
-        label: field.label,
-        type: field.type,
-        value: field.value,
-        order: field.order,
-      })),
-    };
-    const yamlContent = yaml.dump(config);
-    const blob = new Blob([yamlContent], { type: 'text/yaml' });
+  function exportProperties() {
+    const config = yamlFields.map((field) => ({
+      label: field.label,
+      type: field.type,
+      value: field.value,
+      order: field.order,
+    }));
+
+    const jsonContent = JSON.stringify(config, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'markdown-post-config.yaml';
+    a.download = 'markdown-post-config.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
-  function importConfiguration(event: React.ChangeEvent<HTMLInputElement>) {
+  function importProperties(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -186,6 +185,29 @@ export default function MarkdownPostWriter() {
     }
   }
 
+  function copyToClipboard() {
+    const yamlLines = yamlFields
+      .sort((a, b) => a.order - b.order)
+      .map((field) => {
+        let valueString;
+        if (field.type === 'list' && Array.isArray(field.value)) {
+          valueString =
+            '\n' +
+            field.value
+              .map((item: string | number | boolean | null) => `  - ${item}`)
+              .join('\n');
+        } else if (field.type === 'boolean') {
+          valueString = field.value ? 'true' : 'false';
+        } else {
+          valueString = field.value;
+        }
+        return `${field.label}: ${valueString}`;
+      })
+      .join('\n');
+    const fullContent = `---\n${yamlLines}\n---\n\n${markdownContent}`;
+    navigator.clipboard.writeText(fullContent);
+  }
+
   // MARK: Main Component Render
 
   if (!isClient) {
@@ -207,7 +229,56 @@ export default function MarkdownPostWriter() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <header className="fixed top-0 left-0 w-full bg-white dark:bg-black border-b border-gray-300 dark:border-gray-700 p-4 flex z-10 justify-end">
+        <div className="flex gap-x-2">
+          <button
+            className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 cursor-pointer flex items-center gap-x-2"
+            onClick={exportProperties}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+              />
+            </svg>
+            Export Properties
+          </button>
+          <label className="rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600 cursor-pointer flex items-center gap-x-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+              />
+            </svg>
+            <div>
+              Import Properties
+              <input
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={importProperties}
+              />
+            </div>
+          </label>
+        </div>
+      </header>
       <main className="flex min-h-screen w-full max-w-5xl flex-col items-center py-8 px-4 sm:py-32 sm:px-16 bg-white dark:bg-black sm:items-start">
         <div className="flex w-full flex-col sm:flex-row sm:justify-between gap-4">
           <div className="mb-4 block text-2xl font-bold dark:text-white">
@@ -215,50 +286,25 @@ export default function MarkdownPostWriter() {
           </div>
           <div className="flex flex-wrap gap-2">
             <button
-              className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
-              onClick={() => {
-                const yamlLines = yamlFields
-                  .sort((a, b) => a.order - b.order)
-                  .map((field) => {
-                    let valueString;
-                    if (field.type === 'list' && Array.isArray(field.value)) {
-                      valueString =
-                        '\n' +
-                        field.value
-                          .map(
-                            (item: string | number | boolean | null) =>
-                              `  - ${item}`
-                          )
-                          .join('\n');
-                    } else if (field.type === 'boolean') {
-                      valueString = field.value ? 'true' : 'false';
-                    } else {
-                      valueString = field.value;
-                    }
-                    return `${field.label}: ${valueString}`;
-                  })
-                  .join('\n');
-                const fullContent = `---\n${yamlLines}\n---\n\n${markdownContent}`;
-                navigator.clipboard.writeText(fullContent);
-              }}
+              className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer flex items-center gap-x-2"
+              onClick={copyToClipboard}
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z"
+                />
+              </svg>
               Copy Markdown
             </button>
-            <button
-              className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 cursor-pointer"
-              onClick={exportConfiguration}
-            >
-              Export Config
-            </button>
-            <label className="rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600 cursor-pointer">
-              Import Config
-              <input
-                type="file"
-                accept=".yaml,.yml"
-                className="hidden"
-                onChange={importConfiguration}
-              />
-            </label>
           </div>
         </div>
         <div className="mb-8 text-gray-600 dark:text-gray-300">
@@ -330,16 +376,29 @@ export default function MarkdownPostWriter() {
                       handle={true}
                     />
                   ))}
-                {/* <DragOverlay></DragOverlay> */}
               </SortableContext>
             </DndContext>
           </div>
 
-          <div className="text-center w-full">
+          <div className="justify-items-center">
             <button
-              className="mb-8 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer"
+              className="mb-8 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 cursor-pointer flex items-center gap-x-2"
               onClick={addYamlField}
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
               Add YAML Field
             </button>
           </div>
