@@ -10,6 +10,11 @@ If there are any bugs or feature requests, write them [here](https://github.com/
 
 Fork the repo and clone it to your device.
 
+```bash
+git clone https://github.com/YOUR-USERNAME/markdown-post-writer.git
+cd markdown-post-writer
+```
+
 In the terminal for your cloned repository, run the development server:
 
 ```bash
